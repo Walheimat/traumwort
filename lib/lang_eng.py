@@ -15,7 +15,7 @@ def find_names(txtarr):
 	names = []
 	commons = []
 	
-	c = open('lib/commons/lang_eng.txt').read().split()
+	c = open('lib/commons/lang_eng.dt').read().split()
 	for word in c:
 		commons.append(word)
 	
