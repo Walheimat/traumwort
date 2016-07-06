@@ -17,6 +17,15 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Textdateien
+*.txt
+
+# Python compiled
+*.pyc
+
+# Gewichtsmatrizen
+*.hdf5
+
 # =========================
 # Operating System Files
 # =========================

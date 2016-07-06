@@ -1,0 +1,27 @@
+
+========================
+HILFE/GEBRAUCHSANWEISUNG
+========================
+
+-h : zeigt die Gebrauchsanweisung an, also genau diese hier
+
+-i <Textdatei> : der Ausgangstext; Beispiel: -i horoskop.txt
+
+# TEXT GENERIEREN #
+-g <Ganzzahl> : es wird mithilfe der gespeicherten Gewichtsmatrix nur ausgegeben
+-l <Ganzzahl> : legt die Länge [in Wörtern] der Ausgabe fest; standardmäßig 20; Beispiel: -l 100
+-d <Gleitkommazahl> : legt den Grad fest, zu dem abgewichen werden darf; standardmäßig 0.2; Beispiel: -d 1.2
+
+Beispiel: python traumtext.py -i kurzenbrooks.txt -g -l 800 -d 0.5
+
+# NETZWERK TRAINIEREN #
+-n : das Netzwerk wird von Null an trainiert
+-r : das Training wird mithilfe der bestehenden Gewichtsmatrix wiederaufgenommen
+-e <Ganzzahl> : legt die Anzahl der Durchläufe fest, bevor die Matrix gespeichert wird; standardmäßig 10; Beispiel: -e 5
+-c : Großbuchstaben werden nicht berücksichtigt
+
+Beispiel: python traumtext.py -i kurzenbrooks.txt -n -c
+
+============
+NOCH FRAGEN?
+============
