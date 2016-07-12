@@ -63,7 +63,7 @@ v_length = 20
 v_noe = 1
 g_only = True
 root = Tk()
-root.title("Visual Traumwort")
+root.title("Traumwort")
 
 menubar = Menu(root)
 
