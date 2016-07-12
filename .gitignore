@@ -26,6 +26,9 @@ $RECYCLE.BIN/
 # Gewichtsmatrizen
 *.hdf5
 
+# Batch
+*.bat
+
 # =========================
 # Operating System Files
 # =========================

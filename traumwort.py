@@ -4,15 +4,24 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.utils.data_utils import get_file
 from keras.models import model_from_json
+from Tkinter import *
 import keras.callbacks
 import numpy as np
 import random
 import getopt
 import sys
-sys.path.insert(0, './lib')
 import locale
 import os
-import str_manipulation as manip
+from twlib import str_manipulation as manip
+
+def log(line, tag="d"):
+	if external_log:
+		log_ref.config(state=NORMAL)
+		log_ref.insert(END, str(line), tag)
+		log_ref.config(state=DISABLED)
+		log_ref.see(END)
+	else:
+		print(str(line))
 
 # Verluste	
 class LossHistory(keras.callbacks.Callback):
@@ -34,9 +43,9 @@ def get_path_and_file(pth, nm, md):
 def usage():
 	try:
 		help = open('stuff/help.dt')
-		print(help.read())
+		log(help.read(), "b")
 	except IOError as err:
-		print(err)
+		log(err, "r")
 
 # Einlesen und Verarbeiten des Texts		
 def read_text(path):
@@ -53,8 +62,10 @@ def read_text(path):
 	word_indices = dict((c, i) for i, c in enumerate(words))
 	indices_word = dict((i, c) for i, c in enumerate(words))
 	
-	print('Textlänge:', len(text))
-	print('Anzahl der Wörter:', len(words))
+	log("\nTextlänge: ")
+	log(len(text), "r")
+	log("\nAnzahl der Wörter: ")
+	log(len(words), "r")
 	
 # Vektorisierung der Wörter
 def vectorize():
@@ -71,9 +82,11 @@ def vectorize():
 			seq.append(text_as_words[i + t])
 		word_sequences.append(seq)
 		next_words.append(text_as_words[i + max_number_of_words])
-	print('nb-Sequenzen:', len(word_sequences))
-
-	print('es wird vektorisiert...')
+	
+	log("\nnb-Sequenzen: ")
+	log(len(word_sequences), "r")
+	log("\nes wird vektorisiert...")
+	
 	X = np.zeros((len(word_sequences), max_number_of_words, len(words)), dtype=np.bool)
 	y = np.zeros((len(word_sequences), len(words)), dtype=np.bool)
 	for i, sequence in enumerate(word_sequences):
@@ -84,8 +97,9 @@ def vectorize():
 # Modellerstellung		
 def build_model():
 	global model
-
-	print('Modell wird erstellt...', '\n')
+	
+	log("\nModell wird erstellt...")
+	
 	if fresh:
 		model = Sequential()
 		model.add(LSTM(512, return_sequences=True, input_shape=(max_number_of_words, len(words))))
@@ -106,6 +120,8 @@ def build_model():
 def train_network():
 	global history
 	
+	log("\nTraining läuft...")
+	
 	history = LossHistory()
 	model.fit(
 		X,
@@ -125,7 +141,8 @@ def sample(a, temperature=1.0):
 	
 	
 def generate_text():
-	print('Generierung läuft...')
+	
+	log("\nGenerierung läuft...")
 	
 	start_index = random.randint(0, len(text_as_words) - max_number_of_words - 1)
 	
@@ -160,12 +177,12 @@ def generate_text():
 			sys.stdout.write(next_word)
 			sys.stdout.write(' ')
 			sys.stdout.flush()
+			
+	log("\n\nAusgabe:\n\n")
+	log(generated + '\n', "b")
 	
 	# hier wird in die Datei geschrieben
 	save_text(generated)
-	
-	print("\nDer versuchsweise rekonstruierte Text:\n")
-	print(generated)
 	
 def save_text(txt):
 	directory = 'output/' + input_trunc + '/'
@@ -176,8 +193,61 @@ def save_text(txt):
 	output_name = random_seed + '.txt'
 	output_file = open(directory + output_name, 'w')
 	output_file.write(txt)
-	print()
-	print("Die Ausgabe findest du hier: " + directory + output_name)
+
+	log("\nDie Ausgabe findest du hier: " + directory + output_name)
+	log("\nCAT-KETT! CAT-KETT!", "r")
+	
+def load_file(file_path, div, noe, gonly, tleng, txt):
+	global input_trunc, output_length, muted, diversity, no_of_epochs, is_lower, fresh, language, grammar, log_ref, external_log, output_length
+	
+	external_log = True
+	output_length = tleng
+	log_ref = txt
+	language = "English"
+	input = file_path
+	input_trunc = input[input.rindex('/') + 1: len(input) - 4]
+	generate_only = gonly
+	fresh = False
+	if not generate_only:
+		if not os.path.isfile('weights/' + input_trunc + '.hdf5'):
+			fresh = True
+	is_lower = False
+	no_of_epochs = noe
+	diversity = div
+	muted = False
+	
+	#input_trunc = input[:(len(input) - 4)]
+	
+	if "English" in language:
+		from twlib import lang_eng as grammar
+		
+	log("\n\n" + "KETT-CAT! KETT-CAT!", "r")
+	
+	# ich hoffe, das funktioniert auch auf Linux/OS X; dieses ganze Decoding und Encoding ist eigentlich nur für die richtige Darstellung im Terminal
+	# intern ist sowieso alles utf-8-codiert
+	if generate_only:
+		log("\n"+ "Es wird, ausgehend von der gespeicherten Gewichtsmatrix, ein {0} Wörter langer Text mit diversity-Grad {1} generiert...".format(output_length, diversity))
+	else:
+		log("\n"+ "Das Netzwerk wird {0} Epoche(n) lang trainiert!".format(no_of_epochs))
+	
+	read_text(input)
+	grammar.find_names(text_as_words)
+	vectorize()
+	build_model()
+
+	if not generate_only:
+		train_network()
+		model.save_weights('weights/' + input_trunc + '.hdf5', overwrite=True)
+		losses_sum = 0.0
+		for i in history.losses:
+			losses_sum += float(i)
+			
+		log("\nDurchschnitt: ")
+		log(round(losses_sum / len(history.losses), 10), "r")
+		
+	generate_text()
+	
+	
 
 def main():
 	global input_trunc, output_length, muted, diversity, no_of_epochs, is_lower, fresh, language, grammar

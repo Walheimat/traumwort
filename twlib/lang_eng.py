@@ -1,4 +1,6 @@
-﻿def check_for_comma(word):
+﻿import os
+
+def check_for_comma(word):
 	if word.endswith('ing'):
 		return True
 	return False
@@ -15,7 +17,9 @@ def find_names(txtarr):
 	names = []
 	commons = []
 	
-	c = open('lib/commons/lang_eng.dt').read().split()
+	location = os.path.dirname(os.path.abspath(__file__))
+	
+	c = open('twlib/commons/lang_eng.dt').read().split()
 	for word in c:
 		commons.append(word)
 	
@@ -32,5 +36,3 @@ def find_names(txtarr):
 		if candidates[word] > 2:
 			if word not in commons:
 				names.append(word)
-				
-	print(names)
