@@ -29,6 +29,9 @@ $RECYCLE.BIN/
 # Batch
 *.bat
 
+# JSON
+*.json
+
 # =========================
 # Operating System Files
 # =========================

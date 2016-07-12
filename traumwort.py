@@ -197,13 +197,13 @@ def save_text(txt):
 	log("\nDie Ausgabe findest du hier: " + directory + output_name)
 	log("\nCAT-KETT! CAT-KETT!", "r")
 	
-def load_file(file_path, div, noe, gonly, tleng, txt):
+def load_file(file_path, div, noe, gonly, tleng, lng, txt):
 	global input_trunc, output_length, muted, diversity, no_of_epochs, is_lower, fresh, language, grammar, log_ref, external_log, output_length
 	
 	external_log = True
 	output_length = tleng
 	log_ref = txt
-	language = "English"
+	language = lng
 	input = file_path
 	input_trunc = input[input.rindex('/') + 1: len(input) - 4]
 	generate_only = gonly
@@ -220,6 +220,8 @@ def load_file(file_path, div, noe, gonly, tleng, txt):
 	
 	if "English" in language:
 		from twlib import lang_eng as grammar
+	elif "Deutsch" in language:
+		from twlib import lang_deu as grammar
 		
 	log("\n\n" + "KETT-CAT! KETT-CAT!", "r")
 	
@@ -231,7 +233,7 @@ def load_file(file_path, div, noe, gonly, tleng, txt):
 		log("\n"+ "Das Netzwerk wird {0} Epoche(n) lang trainiert!".format(no_of_epochs))
 	
 	read_text(input)
-	grammar.find_names(text_as_words)
+	grammar.find_cond(text_as_words)
 	vectorize()
 	build_model()
 

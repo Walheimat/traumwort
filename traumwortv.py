@@ -8,7 +8,7 @@ class ttThread (threading.Thread):
 		threading.Thread.__init__(self)
 	def run(self):
 		import traumwort
-		traumwort.load_file(path_to_text, v_diversity, v_noe, g_only, v_length, log_text)
+		traumwort.load_file(path_to_text, v_diversity, v_noe, g_only, v_length, v_language, log_text)
 
 def hello():
     print "hello!"
@@ -51,12 +51,20 @@ def set_gen():
 	elif "trainieren" in gen_spin.get():
 		g_only = False
 		
+def set_language():
+	global v_language
+	
+	if "English" in lang_spin.get():
+		v_language = "English"
+	elif "Deutsch" in lang_spin.get():
+		v_language = "Deutsch"
+		
 def info():
 	log_text.config(state=NORMAL)
 	log_text.insert(END, "\n\nGebrauchsanweisung kommt noch ...", "b")
 	log_text.config(state=DISABLED)
 	
-global root, g_only, log_text, v_diversity, v_noe, v_length
+global root, g_only, log_text, v_diversity, v_noe, v_length, v_language
 
 v_diversity = 0.2
 v_length = 20
@@ -119,6 +127,11 @@ lf_leng = LabelFrame(lf_config, text="Textlänge")
 lf_leng.pack(padx=10, pady=10)
 leng_spin = Spinbox(lf_leng, values=(20, 50, 100, 200, 500, 1000), command=set_length)
 leng_spin.pack()
+
+lf_lang = LabelFrame(lf_config, text="Sprache")
+lf_lang.pack(padx=10, pady=10)
+lang_spin = Spinbox(lf_lang, values=("English", "Deutsch"), command=set_language, wrap=True)
+lang_spin.pack()
 
 # display the menu
 root.config(menu=menubar)
